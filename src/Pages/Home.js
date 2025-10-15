@@ -8,7 +8,9 @@ import * as THREE from "three";
 import Navbar from "../Components/Navbar";
 import CanModel from "../Components/CanModel";
 import FlavourCarousel from "../Components/FlavourCarousel";
+import LabubuBanner  from "../Components/labubuBanner";
 
+ 
 // ==================== DATA CONFIGURATIONS ====================
 const cans = [
   {
@@ -407,6 +409,8 @@ export default function Home() {
         </div>
       </section>
       <FlavourCarousel/>
+     <LabubuBanner />
+
     </div>
   );
 }

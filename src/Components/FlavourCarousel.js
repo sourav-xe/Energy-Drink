@@ -5,12 +5,19 @@ import { motion, useAnimation } from "framer-motion"; // Import useAnimation for
 
 const images = [
   { id: 1, src: "/crousel/fourth.jpg", title: "Juice" },
-  { id: 2, src: "/crousel/monster.avif", title: "Monster Ultra" },
-  { id: 3, src: "/crousel/third.jpg", title: "Original" },
-  { id: 4, src: "/crousel/second.avif", title: "Mango Loco" },
-  { id: 5, src: "/crousel/sting.avif", title: "Sting" },
+ 
+  { id: 2, src: "/crousel/9th.jpg", title: "snakesas" },
+     { id: 3, src: "/crousel/11th.jpg", title: "Zoal" },
+    { id: 4, src: "/crousel/12th.jpg", title: "Cusol" },
+  { id: 5, src: "/crousel/sixth.jpg", title: "Punch" },
+ 
   { id: 6, src: "/crousel/fifth.jpg", title: "Tropical" },
-  { id: 7, src: "/crousel/sixth.jpg", title: "Punch" },
+
+  { id: 7, src: "/crousel/8.jpg", title: "Rastro" },
+  { id: 8, src: "/crousel/monster.avif", title: "Monster Ultra" },
+   { id: 9, src: "/crousel/sting.avif", title: "Sting" },
+      { id: 11, src: "/crousel/third.jpg", title: "Original" },
+  { id: 12, src: "/crousel/second.avif", title: "Mango Loco" },
 ];
 
 const FlavourCarousel = () => {
@@ -140,7 +147,7 @@ const FlavourCarousel = () => {
   return (
     <div className="min-h-screen bg-black flex flex-col items-center justify-center overflow-hidden relative">
       <h1 className="text-4xl font-extrabold text-white mb-12 flex items-center gap-2">
-        🧃 Monster Flavour Carousel (Enhanced) 🚀
+         Best Flavours
       </h1>
 
       <motion.div
