@@ -193,7 +193,7 @@ const HeroModel = ({ config }) => {
       scale: config.scale, 
       opacity: 1,
       // 2. Move transition into the variant
-      transition: { duration: 5.5, delay: 0.5, ease: "easeOut" }
+      transition: { duration: 4.5, delay: 0.5, ease: "easeOut" }
     },
   };
 
@@ -462,13 +462,27 @@ export default function Home() {
             >
               {heroConfig.description}
             </motion.p>
-            <motion.button
-              className="mt-8 px-8 py-3 rounded-full font-bold text-black text-lg bg-gradient-to-r from-cyan-400 to-blue-500 shadow-[0_0_25px_rgba(0,216,255,0.4)]"
-              whileHover={{ scale: 1.1 }}
-              onClick={() => navigate("/products")}
-            >
-              Discover The Flavors
-            </motion.button>
+         <motion.button
+  className="relative mt-8 px-8 py-3 rounded-full font-bold text-white text-lg overflow-hidden"
+  whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(255,255,255,0.6)" }}
+  whileTap={{ scale: 0.95 }}
+  onClick={() => navigate("/products")}
+  style={{
+    background: "radial-gradient(circle at 20% 20%, #6b5bff, #1e1e3f, #000)", // galaxy effect
+    border: "1px solid rgba(255,255,255,0.2)",
+  }}
+>
+  {/* Animated star border */}
+  <span className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+    <span className="absolute w-2 h-2 bg-white rounded-full top-1/4 left-1/3 animate-star"></span>
+    <span className="absolute w-1.5 h-1.5 bg-white rounded-full top-1/2 left-2/3 animate-star"></span>
+    <span className="absolute w-1.5 h-1.5 bg-white rounded-full top-3/4 left-1/4 animate-star"></span>
+  </span>
+
+  {/* Button text */}
+  Discover The Flavors
+</motion.button>
+
           </motion.div>
         </motion.div>
       </section>

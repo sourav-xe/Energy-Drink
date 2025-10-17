@@ -3,4 +3,15 @@
 @tailwind utilities;
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Poppins:wght@400;600;700&display=swap');
+
+@keyframes star-move {
+  0% { transform: translate(0,0); opacity: 1; }
+  50% { transform: translate(4px,-4px); opacity: 0.5; }
+  100% { transform: translate(0,0); opacity: 1; }
+}
+
+.animate-star {
+  animation: star-move 1.5s linear infinite;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;700;900&display=swap');

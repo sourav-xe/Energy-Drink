@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import StarBorder from './StarBorder';
 
 const LabubuBanner = () => {
   const containerRef = useRef(null);
@@ -107,14 +108,22 @@ const LabubuBanner = () => {
           <p className="text-xs md:text-sm text-white/80 font-semibold mb-10 tracking-widest">
             Engineered for the moments you need to be at your peak. This isn't just an energy drink—it's the fuel for your next breakthrough.
           </p>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-8 py-4 bg-gradient-to-r from-red-600 to-blue-600 text-white font-bold text-lg rounded-full shadow-lg inline-flex items-center gap-3 transition-all duration-300 ease-in-out"
-          >
-            FIND YOUR WIIINGS
-            <ArrowRight size={22} />
-          </motion.button>
+       <motion.button
+  whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(255,255,255,0.6)" }}
+  whileTap={{ scale: 0.95 }}
+  className="px-8 py-4 bg-gradient-to-r from-red-600 to-blue-600 text-white font-bold text-lg rounded-full shadow-lg inline-flex items-center gap-3 transition-all duration-300 ease-in-out relative overflow-hidden"
+>
+  FIND YOUR WIIINGS
+  <ArrowRight size={22} />
+
+  {/* Optional subtle animated stars effect */}
+  <span className="absolute top-0 left-0 w-full h-full pointer-events-none">
+    <span className="animate-star absolute w-2 h-2 bg-white rounded-full top-1/4 left-1/3"></span>
+    <span className="animate-star absolute w-1.5 h-1.5 bg-white rounded-full top-1/2 left-2/3"></span>
+    <span className="animate-star absolute w-1.5 h-1.5 bg-white rounded-full top-3/4 left-1/4"></span>
+  </span>
+</motion.button>
+
         </motion.div>
       </section>
     </div>
