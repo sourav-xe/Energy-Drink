@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, Suspense } from "react";
+import React, { useState, useEffect, useRef, Suspense, lazy } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Environment, Stars, useGLTF } from "@react-three/drei";
 import { motion, AnimatePresence } from "framer-motion";
@@ -7,10 +7,11 @@ import { useNavigate } from "react-router-dom";
 import * as THREE from "three";
 import Navbar from "../Components/Navbar";
 import CanModel from "../Components/CanModel";
-import FlavourCarousel from "../Components/FlavourCarousel";
-import LabubuBanner  from "../Components/labubuBanner";
 
- 
+// ==================== LAZY LOADING ====================
+const FlavourCarousel = lazy(() => import("../Components/FlavourCarousel"));
+const LabubuBanner = lazy(() => import("../Components/labubuBanner"));
+
 // ==================== DATA CONFIGURATIONS ====================
 const cans = [
   {
@@ -22,13 +23,13 @@ const cans = [
     modelPath: "/model/monster_can/scene.gltf",
     highlightColor: "#FFD700",
     textColor: "#FFFFFF",
-    glowColor: "rgba(255, 105, 180, 0.7)",
     modelGlowColor: "#ff69b4",
     scale: 2.4,
     position: [0, -0.7, 0],
-    camera: [0, 0, 3], // Adjusted camera for better animation
+    camera: [0, 0, 3],
     rotation: [0, -1.2, 0],
     bg: "/bg/monsterBg.png",
+    scrollHeight: 100,
   },
   {
     id: 2,
@@ -39,13 +40,13 @@ const cans = [
     modelPath: "/model/red_bull_energy_drink_can.glb",
     highlightColor: "#FFC700",
     textColor: "#FFFFFF",
-    glowColor: "rgba(255, 20, 147, 0.8)",
     modelGlowColor: "#ff1493",
     scale: [10, 18.3, 7.7],
     position: [0.08, -0.2, 0],
-    camera: [0, 0, 4.5], // Adjusted camera
+    camera: [0, 0, 4.5],
     rotation: [-0.5, 1.2, 0],
     bg: "/bg/redblue.png",
+    scrollHeight: 100,
   },
   {
     id: 3,
@@ -56,32 +57,32 @@ const cans = [
     modelPath: "/model/monster_energy_drink.glb",
     highlightColor: "#90EE90",
     textColor: "#FFFFFF",
-    glowColor: "rgba(142, 255, 97, 0.5)",
     modelGlowColor: "#00ff00",
     scale: [0.22, 0.22, 0.22],
     position: [0.01, -0.5, 0.2],
-    camera: [0, 0, 3], // Adjusted camera
+    camera: [0, 0, 3],
     rotation: [0, -0.3, 0],
     bg: "/bg/wh.jpg",
+    scrollHeight: 150,
   },
 ];
 
 const heroConfig = {
-  subtitle: "Harness The Storm",
+  subtitle: "THE FUTURE OF ENERGY",
   title: "LIT ENERGY",
-  flavor: "Classic Surge",
+  flavor: "CLASSIC SURGE",
   description:
-    "We captured the raw, untamed power of a thunderstorm and infused it into every can. LIT Energy is more than a drink; it's pure, unadulterated power designed for those who command precision and live with intensity.",
+    "Engineered for peak performance. Our revolutionary blend delivers a smooth, sustained energy boost with zero crash, fueling your focus and ambition. This isn't just energy. It's an upgrade.",
   modelPath: "/model/lit.glb",
   highlightColor: "#00d8ff",
   textColor: "#FFFFFF",
-  glowColor: "rgba(0, 216, 255, 0.4)",
   modelGlowColor: "#00d8ff",
   scale: 1,
   position: [0, -0.85, 0],
   camera: [0, 0.5, 3.5],
-  rotation: [0, -0.8, 0],
+  rotation: [0, -4.8, 0],
   bg: "/bg/thunder.mp4",
+  scrollHeight: 100,
 };
 
 const newReleases = [
@@ -118,29 +119,22 @@ const newReleases = [
 ];
 
 // ==================== 3D COMPONENTS ====================
-
-// ✨ NEW: Camera controller for smooth transitions between can positions
 const CameraController = ({ targetPosition }) => {
   const vec = new THREE.Vector3();
   useFrame((state) => {
-    // Smoothly interpolate camera position
     state.camera.position.lerp(vec.set(...targetPosition), 0.05);
-    state.camera.updateProjectionMatrix();
-    // Always look at the center of the scene
     state.camera.lookAt(0, 0, 0);
+    state.camera.updateProjectionMatrix();
   });
   return null;
 };
 
-// ✨ UPDATED: Model component with enter/exit animations
-// ✨ UPDATED: Smoother, slower, and more graceful slide animations
-const AnimatedShowcaseModel = ({ modelPath, scale, position, modelGlowColor }) => {
+const ScrollShowcaseModel = ({ modelPath, scale, position, modelGlowColor }) => {
   const group = useRef();
   const [canRotate, setCanRotate] = useState(false);
 
-  // Auto-rotation starts after a brief delay
   useEffect(() => {
-    const timer = setTimeout(() => setCanRotate(true), 2000); // Increased delay to allow for slower intro
+    const timer = setTimeout(() => setCanRotate(true), 2000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -153,25 +147,20 @@ const AnimatedShowcaseModel = ({ modelPath, scale, position, modelGlowColor }) =
   return (
     <motion3d.group
       ref={group}
-      // New can enters from a closer point on the right (x: 3)
       initial={{ x: 3, y: -0.5, scale: 0.6, rotateY: Math.PI / 4 }}
-      // Animates to its target position over a longer duration with smoother easing
       animate={{
         x: position[0],
         y: position[1],
         z: position[2],
         scale: scale,
         rotateY: 0,
-        // 👇 SLOWER DURATION AND SMOOTHER EASE
         transition: { duration: 1.8, ease: "easeInOut" },
       }}
-      // Old can exits to a closer point on the left (x: -3)
       exit={{
         x: -3,
         y: 0.5,
         scale: 0.6,
         rotateY: -Math.PI / 4,
-        // 👇 SLOWER DURATION AND SMOOTHER EASE
         transition: { duration: 1.2, ease: "easeInOut" },
       }}
     >
@@ -182,8 +171,48 @@ const AnimatedShowcaseModel = ({ modelPath, scale, position, modelGlowColor }) =
   );
 };
 
-// Animated can for the "New Releases" section
-const AnimatedCan = ({ config }) => {
+// ==================== [FIX 1] UPDATED HeroModel Component ====================
+const HeroModel = ({ config }) => {
+  const { scene } = useGLTF(config.modelPath);
+  const modelRef = useRef();
+
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime();
+    if (modelRef.current) {
+      // This idle animation runs every frame
+      // It controls the slow rotation and bobbing
+      modelRef.current.rotation.y = t * 0.6;
+      modelRef.current.position.y = config.position[1] + Math.sin(t * 1.2) * 0.05;
+    }
+  });
+
+  // 1. Define variants for the animation
+  const modelVariants = {
+    hidden: { scale: 0, opacity: 0 },
+    visible: { 
+      scale: config.scale, 
+      opacity: 1,
+      // 2. Move transition into the variant
+      transition: { duration: 5.5, delay: 0.5, ease: "easeOut" }
+    },
+  };
+
+  return (
+    <motion3d.primitive
+      ref={modelRef}
+      object={scene}
+      position={config.position}
+      
+      // 3. Use variants, but remove whileInView.
+      // The 'animate' prop ("hidden" or "visible") will be inherited
+      // from the parent motion.div in the Home component.
+      variants={modelVariants}
+    />
+  );
+};
+// ===================================================================
+
+const AnimatedCan = React.memo(({ config }) => {
   const { scene } = useGLTF(config.modelPath);
   const modelRef = useRef();
 
@@ -196,10 +225,9 @@ const AnimatedCan = ({ config }) => {
   });
 
   return <primitive ref={modelRef} object={scene} scale={config.scale} position={config.position} />;
-};
+});
 
-// Reusable canvas scene for hero and new releases
-const ProductScene = ({ config }) => (
+const ProductScene = React.memo(({ config }) => (
   <Canvas camera={{ position: config.camera || [0, 0.6, 3.5], fov: 50 }}>
     <Suspense fallback={null}>
       <ambientLight intensity={0.5} />
@@ -211,7 +239,7 @@ const ProductScene = ({ config }) => (
       <OrbitControls enableZoom={false} enablePan={false} />
     </Suspense>
   </Canvas>
-);
+));
 
 // ==================== MAIN PAGE COMPONENT ====================
 export default function Home() {
@@ -219,15 +247,31 @@ export default function Home() {
   const [showMainContent, setShowMainContent] = useState(true);
   const navigate = useNavigate();
 
+  const cumulativeHeights = cans.map((can, i) =>
+    cans.slice(0, i + 1).reduce((sum, c) => sum + (c.scrollHeight || 100), 0)
+  );
+
+  // ==================== NEW Optimization: Preload Models ====================
+  useEffect(() => {
+    // This runs once and starts downloading all models in the background
+    cans.forEach(can => useGLTF.preload(can.modelPath));
+    heroConfig.modelPath && useGLTF.preload(heroConfig.modelPath);
+    newReleases.forEach(release => useGLTF.preload(release.modelPath));
+  }, []); // Empty dependency array ensures this runs only once on mount
+  // ========================================================================
+
   useEffect(() => {
     const handleScroll = () => {
-      // Determine active index based on scroll position
-      const newIndex = Math.min(Math.floor(window.scrollY / window.innerHeight), cans.length - 1);
-      if (newIndex !== activeIndex) {
-        setActiveIndex(newIndex);
+      const scrollYvh = (window.scrollY / window.innerHeight) * 100;
+      let newIndex = 0;
+      for (let i = 0; i < cumulativeHeights.length; i++) {
+        if (scrollYvh < cumulativeHeights[i]) {
+          newIndex = i;
+          break;
+        }
       }
-      
-      // Hide the showcase section when scrolling to the next part
+      if (newIndex !== activeIndex) setActiveIndex(newIndex);
+
       const aboutSection = document.querySelector("#about-section");
       if (aboutSection) {
         const rect = aboutSection.getBoundingClientRect();
@@ -237,21 +281,29 @@ export default function Home() {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [activeIndex]);
+  }, [activeIndex, cumulativeHeights]);
 
   const activeCan = cans[activeIndex];
 
-  const sectionVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
+  const textVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i = 1) => ({
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.8, ease: "easeOut", delay: i * 0.2 },
+    }),
   };
 
   return (
-    <div className="bg-black text-white min-h-screen relative overflow-hidden font-montserrat">
+    <div className="bg-black text-white min-h-screen relative overflow-hidden font-body">
       <Navbar />
 
-      {/* ==================== 1. SCROLL-BASED SHOWCASE SECTION ==================== */}
-      <div style={{ height: `${cans.length * 100}vh` }} />
+      {/* ========== SCROLL-BASED SHOWCASE ========= */}
+      <div
+        style={{
+          height: `${cans.reduce((sum, can) => sum + (can.scrollHeight || 100), 0)}vh`,
+        }}
+      />
       <AnimatePresence>
         {showMainContent && (
           <motion.div
@@ -261,7 +313,7 @@ export default function Home() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            {/* Animated Background Image */}
+            {/* Background */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeCan.id}
@@ -279,68 +331,60 @@ export default function Home() {
               />
             </AnimatePresence>
 
-            {/* Left Side: Text Content */}
+            {/* Text */}
             <div className="relative z-10 w-1/2 h-screen flex flex-col justify-center items-start p-16">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeCan.id}
-                  initial={{ opacity: 0, x: -50 }}
-                  animate={{ opacity: 1, x: 0, transition: { duration: 1, delay: 0.2, ease: "easeOut" } }}
-                  exit={{ opacity: 0, x: 50, transition: { duration: 0.5, ease: "easeIn" } }}
-                >
-                  <h2 className="text-3xl mb-2" style={{ color: activeCan.highlightColor }}>
-                    {activeCan.subtitle}
-                  </h2>
-                  <h1 className="text-6xl font-extrabold mb-4">{activeCan.title}</h1>
-                  <p className="text-lg max-w-md text-gray-300">{activeCan.description}</p>
-                </motion.div>
-              </AnimatePresence>
+              <motion.h2
+                className="text-3xl mb-2 font-display tracking-wider" 
+                style={{ color: activeCan.highlightColor }}
+                custom={0}
+                initial="hidden"
+                animate="visible"
+                variants={textVariants}
+              >
+                {activeCan.subtitle}
+              </motion.h2>
+              <motion.h1
+                className="text-7xl font-display mb-4" 
+                custom={1}
+                initial="hidden"
+                animate="visible"
+                variants={textVariants}
+              >
+                {activeCan.title}
+              </motion.h1>
+              <motion.p
+                className="text-lg max-w-md text-gray-300"
+                custom={2}
+                initial="hidden"
+                animate="visible"
+                variants={textVariants}
+              >
+                {activeCan.description}
+              </motion.p>
             </div>
 
-           {/* Right Side: 3D Model Canvas */}
-<div className="w-1/2 h-screen">
-  <Canvas camera={{ fov: 40 }}>
-    {/* ✨ 1. Softer base light to ensure nothing is pure black */}
-    <ambientLight intensity={0.5} />
-
-    {/* ✨ 2. The main "Key" light, now colored to match the can's theme */}
-    <directionalLight
-      color={activeCan.modelGlowColor}
-      position={[5, 5, 5]}
-      intensity={2}
-    />
-    
-    {/* ✨ 3. A "Fill" light from the opposite side to soften shadows */}
-    <directionalLight
-      color="#ffffff"
-      position={[-5, 3, 2]}
-      intensity={0.8}
-    />
-    
-    {/* ✨ 4. A subtle "Rim" light from behind to highlight the can's edges */}
-    <spotLight
-      position={[0, 10, -10]}
-      intensity={1.5}
-      angle={0.3}
-      penumbra={1}
-      distance={50}
-    />
-
-    {/* ✨ 5. The MOST IMPORTANT addition for reflections! */}
-    <Environment preset="city" />
-
-    <CameraController targetPosition={activeCan.camera} />
-    <AnimatePresence mode="wait">
-      <AnimatedShowcaseModel key={activeCan.id} {...activeCan} />
-    </AnimatePresence>
-    <OrbitControls enableZoom={false} enablePan={false} />
-  </Canvas>
-</div>
+            {/* 3D Model */}
+            <div className="w-1/2 h-screen">
+              <Canvas camera={{ fov: 40 }}>
+                <ambientLight intensity={0.5} />
+                <directionalLight color={activeCan.modelGlowColor} position={[5, 5, 5]} intensity={2} />
+                <directionalLight color="#ffffff" position={[-5, 3, 2]} intensity={0.8} />
+                <spotLight position={[0, 10, -10]} intensity={1.5} angle={0.3} penumbra={1} distance={50} />
+                <Suspense fallback={null}> {/* Added Suspense here */}
+                  <Environment preset="city" />
+                  <CameraController targetPosition={activeCan.camera} />
+                  <AnimatePresence mode="wait">
+                    <ScrollShowcaseModel key={activeCan.id} {...activeCan} />
+                  </AnimatePresence>
+                  <OrbitControls enableZoom={false} enablePan={false} />
+                </Suspense>
+              </Canvas>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
-      
-      {/* ==================== 2. HERO SECTION ("LIT ENERGY") ==================== */}
+
+      {/* ========== [FIX 2] HERO SECTION (UPDATED) ========= */}
       <section
         id="about-section"
         className="relative w-full min-h-screen bg-black text-white flex flex-col items-center justify-center"
@@ -354,22 +398,70 @@ export default function Home() {
         />
         <div className="absolute inset-0 bg-black/50 z-0"></div>
 
-        <div className="relative w-full max-w-7xl flex flex-col md:flex-row items-center justify-center z-20 mt-10">
+        {/* THIS IS THE FIX: 
+          The whileInView logic is moved to this parent motion.div.
+          This is a real DOM element, so IntersectionObserver will work.
+          The 'animate' state ("hidden" or "visible") will be passed down
+          to all children, including HeroModel and the text elements.
+        */}
+        <motion.div 
+          className="relative w-full max-w-7xl flex flex-col md:flex-row items-center justify-center z-20 mt-10"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ amount: 0.3 }}
+        >
+          {/* This div no longer needs motion props,
+            but HeroModel inside will inherit from the parent.
+          */}
           <div className="w-full md:w-1/2 h-[70vh]">
-            <ProductScene config={heroConfig} />
+            <Canvas camera={{ fov: 50, position: heroConfig.camera }}>
+              <Suspense fallback={null}>
+                <ambientLight intensity={0.5} />
+                <directionalLight color={heroConfig.modelGlowColor} position={[4, 4, 2]} intensity={3} />
+                <directionalLight color="#ffffff" position={[-4, -2, 5]} intensity={1.5} />
+                <Environment preset="city" />
+                <Stars radius={100} depth={50} count={3000} fade speed={1} />
+                {/* HeroModel will inherit "animate" state from the parent motion.div */}
+                <HeroModel config={heroConfig} />
+                <OrbitControls enableZoom={false} enablePan={false} />
+              </Suspense>
+            </Canvas>
           </div>
+
+          {/* This div also inherits from the parent.
+            The child text elements will animate based on textVariants.
+          */}
           <motion.div
             className="w-full md:w-1/2 px-8"
-            initial="hidden"
-            whileInView="visible"
-            variants={sectionVariants}
           >
-            <h3 className="text-cyan-400 uppercase mb-2 tracking-widest">
+            <motion.h3
+              className="text-cyan-400 uppercase mb-2 tracking-widest text-2xl font-display"
+              custom={0}
+              variants={textVariants}
+            >
               {heroConfig.subtitle}
-            </h3>
-            <h1 className="text-6xl font-black mb-2">{heroConfig.title}</h1>
-            <h2 className="text-2xl text-gray-300 mb-4">{heroConfig.flavor}</h2>
-            <p className="text-gray-300 leading-relaxed">{heroConfig.description}</p>
+            </motion.h3>
+            <motion.h1 
+              className="text-8xl font-display mb-2" 
+              custom={1} 
+              variants={textVariants}
+            >
+              {heroConfig.title}
+            </motion.h1>
+            <motion.h2 
+              className="text-3xl text-gray-300 mb-4 font-display" 
+              custom={2} 
+              variants={textVariants}
+            >
+              {heroConfig.flavor}
+            </motion.h2>
+            <motion.p 
+              className="text-gray-300 leading-relaxed text-lg" 
+              custom={3} 
+              variants={textVariants}
+            >
+              {heroConfig.description}
+            </motion.p>
             <motion.button
               className="mt-8 px-8 py-3 rounded-full font-bold text-black text-lg bg-gradient-to-r from-cyan-400 to-blue-500 shadow-[0_0_25px_rgba(0,216,255,0.4)]"
               whileHover={{ scale: 1.1 }}
@@ -378,12 +470,12 @@ export default function Home() {
               Discover The Flavors
             </motion.button>
           </motion.div>
-        </div>
+        </motion.div>
       </section>
 
       {/* ==================== 3. NEW RELEASES SECTION ==================== */}
       <section className="relative w-full bg-[#111] py-20 px-6 flex flex-col items-center">
-        <h2 className="text-4xl md:text-6xl font-black mb-6">New Releases</h2>
+        <h2 className="text-4xl md:text-6xl font-black mb-6 font-display">New Releases</h2>
         <p className="text-lg text-gray-400 max-w-2xl text-center mb-16">
           Explore the cutting edge of energy — crafted with bold flavors and a relentless drive for performance.
         </p>
@@ -400,17 +492,20 @@ export default function Home() {
               >
                 <ProductScene config={release} />
               </div>
-              <h3 className="text-2xl font-bold mt-6" style={{ color: release.modelGlowColor }}>
+              <h3 className="text-3xl font-bold mt-6 font-display" style={{ color: release.modelGlowColor }}>
                 {release.title}
               </h3>
-              <p className="text-gray-400">{release.flavor}</p>
+              <p className="text-gray-400 text-lg">{release.flavor}</p>
             </motion.div>
           ))}
         </div>
       </section>
-      <FlavourCarousel/>
-     <LabubuBanner />
 
+      {/* ==================== LAZY LOADED COMPONENTS ==================== */}
+      <Suspense fallback={<div className="w-full h-screen bg-black flex items-center justify-center text-white">Loading...</div>}>
+        <FlavourCarousel />
+        <LabubuBanner />
+      </Suspense>
     </div>
   );
 }

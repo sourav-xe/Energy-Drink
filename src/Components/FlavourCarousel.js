@@ -9,12 +9,12 @@ const images = [
   { id: 2, src: "/crousel/9th.jpg", title: "snakesas" },
      { id: 3, src: "/crousel/11th.jpg", title: "Zoal" },
     { id: 4, src: "/crousel/12th.jpg", title: "Cusol" },
-  { id: 5, src: "/crousel/sixth.jpg", title: "Punch" },
+  { id: 5, src: "/crousel/1a.jpg", title: "Punch" },
  
-  { id: 6, src: "/crousel/fifth.jpg", title: "Tropical" },
+  { id: 6, src: "/crousel/4a.png", title: "Tropical" },
 
-  { id: 7, src: "/crousel/8.jpg", title: "Rastro" },
-  { id: 8, src: "/crousel/monster.avif", title: "Monster Ultra" },
+  { id: 7, src: "/crousel/2a.jpg", title: "Rastro" },
+  { id: 8, src: "/crousel/3a.jpg", title: "Monster Ultra" },
    { id: 9, src: "/crousel/sting.avif", title: "Sting" },
       { id: 11, src: "/crousel/third.jpg", title: "Original" },
   { id: 12, src: "/crousel/second.avif", title: "Mango Loco" },
