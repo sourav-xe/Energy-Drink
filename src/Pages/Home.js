@@ -5,8 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { motion as motion3d } from "framer-motion-3d";
 import { useNavigate } from "react-router-dom";
 import * as THREE from "three";
-import Navbar from "../Components/Navbar";
 import CanModel from "../Components/CanModel";
+import Layout from "../Components/Layout";
+import { ShoppingCart } from "lucide-react";
 
 // ==================== LAZY LOADING ====================
 const FlavourCarousel = lazy(() => import("../Components/FlavourCarousel"));
@@ -41,7 +42,7 @@ const cans = [
     highlightColor: "#FFC700",
     textColor: "#FFFFFF",
     modelGlowColor: "#ff1493",
-    scale: [10, 18.3, 7.7],
+    scale: [15, 28.3, 7.7],
     position: [0.08, -0.2, 0],
     camera: [0, 0, 4.5],
     rotation: [-0.5, 1.2, 0],
@@ -118,7 +119,7 @@ const newReleases = [
   },
 ];
 
-// ==================== 3D COMPONENTS ====================
+// ==================== 3D COMPONENTS (Optimized with React.memo) ====================
 const CameraController = ({ targetPosition }) => {
   const vec = new THREE.Vector3();
   useFrame((state) => {
@@ -129,7 +130,7 @@ const CameraController = ({ targetPosition }) => {
   return null;
 };
 
-const ScrollShowcaseModel = ({ modelPath, scale, position, modelGlowColor }) => {
+const ScrollShowcaseModel = React.memo(({ modelPath, scale, position, modelGlowColor }) => {
   const group = useRef();
   const [canRotate, setCanRotate] = useState(false);
 
@@ -149,18 +150,12 @@ const ScrollShowcaseModel = ({ modelPath, scale, position, modelGlowColor }) => 
       ref={group}
       initial={{ x: 3, y: -0.5, scale: 0.6, rotateY: Math.PI / 4 }}
       animate={{
-        x: position[0],
-        y: position[1],
-        z: position[2],
-        scale: scale,
-        rotateY: 0,
+        x: position[0], y: position[1], z: position[2],
+        scale: scale, rotateY: 0,
         transition: { duration: 1.8, ease: "easeInOut" },
       }}
       exit={{
-        x: -3,
-        y: 0.5,
-        scale: 0.6,
-        rotateY: -Math.PI / 4,
+        x: -3, y: 0.5, scale: 0.6, rotateY: -Math.PI / 4,
         transition: { duration: 1.2, ease: "easeInOut" },
       }}
     >
@@ -169,30 +164,25 @@ const ScrollShowcaseModel = ({ modelPath, scale, position, modelGlowColor }) => 
       </Suspense>
     </motion3d.group>
   );
-};
+});
 
-// ==================== [FIX 1] UPDATED HeroModel Component ====================
-const HeroModel = ({ config }) => {
+const HeroModel = React.memo(({ config }) => {
   const { scene } = useGLTF(config.modelPath);
   const modelRef = useRef();
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
     if (modelRef.current) {
-      // This idle animation runs every frame
-      // It controls the slow rotation and bobbing
       modelRef.current.rotation.y = t * 0.6;
       modelRef.current.position.y = config.position[1] + Math.sin(t * 1.2) * 0.05;
     }
   });
 
-  // 1. Define variants for the animation
   const modelVariants = {
     hidden: { scale: 0, opacity: 0 },
     visible: { 
       scale: config.scale, 
       opacity: 1,
-      // 2. Move transition into the variant
       transition: { duration: 4.5, delay: 0.5, ease: "easeOut" }
     },
   };
@@ -202,15 +192,10 @@ const HeroModel = ({ config }) => {
       ref={modelRef}
       object={scene}
       position={config.position}
-      
-      // 3. Use variants, but remove whileInView.
-      // The 'animate' prop ("hidden" or "visible") will be inherited
-      // from the parent motion.div in the Home component.
       variants={modelVariants}
     />
   );
-};
-// ===================================================================
+});
 
 const AnimatedCan = React.memo(({ config }) => {
   const { scene } = useGLTF(config.modelPath);
@@ -247,22 +232,16 @@ export default function Home() {
   const [showMainContent, setShowMainContent] = useState(true);
   const navigate = useNavigate();
 
-  const cumulativeHeights = cans.map((can, i) =>
-    cans.slice(0, i + 1).reduce((sum, c) => sum + (c.scrollHeight || 100), 0)
-  );
-
-  // ==================== NEW Optimization: Preload Models ====================
   useEffect(() => {
-    // This runs once and starts downloading all models in the background
     cans.forEach(can => useGLTF.preload(can.modelPath));
     heroConfig.modelPath && useGLTF.preload(heroConfig.modelPath);
     newReleases.forEach(release => useGLTF.preload(release.modelPath));
-  }, []); // Empty dependency array ensures this runs only once on mount
-  // ========================================================================
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollYvh = (window.scrollY / window.innerHeight) * 100;
+      const cumulativeHeights = cans.map((can, i) => cans.slice(0, i + 1).reduce((sum, c) => sum + (c.scrollHeight || 100), 0));
       let newIndex = 0;
       for (let i = 0; i < cumulativeHeights.length; i++) {
         if (scrollYvh < cumulativeHeights[i]) {
@@ -271,17 +250,15 @@ export default function Home() {
         }
       }
       if (newIndex !== activeIndex) setActiveIndex(newIndex);
-
       const aboutSection = document.querySelector("#about-section");
       if (aboutSection) {
         const rect = aboutSection.getBoundingClientRect();
         setShowMainContent(rect.top > window.innerHeight * 0.5);
       }
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [activeIndex, cumulativeHeights]);
+  }, [activeIndex]);
 
   const activeCan = cans[activeIndex];
 
@@ -296,13 +273,13 @@ export default function Home() {
 
   return (
     <div className="bg-black text-white min-h-screen relative overflow-hidden font-body">
-      <Navbar />
+      
+      <AnimatePresence>
+        {showMainContent && <Layout />}
+      </AnimatePresence>
 
-      {/* ========== SCROLL-BASED SHOWCASE ========= */}
       <div
-        style={{
-          height: `${cans.reduce((sum, can) => sum + (can.scrollHeight || 100), 0)}vh`,
-        }}
+        style={{ height: `${cans.reduce((sum, can) => sum + (can.scrollHeight || 100), 0)}vh` }}
       />
       <AnimatePresence>
         {showMainContent && (
@@ -313,7 +290,6 @@ export default function Home() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            {/* Background */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeCan.id}
@@ -331,11 +307,11 @@ export default function Home() {
               />
             </AnimatePresence>
 
-            {/* Text */}
             <div className="relative z-10 w-1/2 h-screen flex flex-col justify-center items-start p-16">
               <motion.h2
-                className="text-3xl mb-2 font-display tracking-wider" 
+                className="text-3xl mb-2 font-display tracking-wider"
                 style={{ color: activeCan.highlightColor }}
+                key={`${activeCan.id}-subtitle`}
                 custom={0}
                 initial="hidden"
                 animate="visible"
@@ -344,7 +320,8 @@ export default function Home() {
                 {activeCan.subtitle}
               </motion.h2>
               <motion.h1
-                className="text-7xl font-display mb-4" 
+                className="text-7xl font-display mb-4"
+                key={`${activeCan.id}-title`}
                 custom={1}
                 initial="hidden"
                 animate="visible"
@@ -354,6 +331,7 @@ export default function Home() {
               </motion.h1>
               <motion.p
                 className="text-lg max-w-md text-gray-300"
+                key={`${activeCan.id}-desc`}
                 custom={2}
                 initial="hidden"
                 animate="visible"
@@ -361,16 +339,29 @@ export default function Home() {
               >
                 {activeCan.description}
               </motion.p>
+              
+              <motion.button
+                className="mt-8 flex items-center gap-3 px-6 py-3 rounded-full text-lg font-semibold border-2 border-white/40 bg-white/10 backdrop-blur-sm hover:bg-white/20 hover:border-white transition-all duration-300"
+                variants={textVariants}
+                custom={3}
+                initial="hidden"
+                animate="visible"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate("/products")}
+              >
+                <ShoppingCart size={22} />
+                Shop Now
+              </motion.button>
             </div>
 
-            {/* 3D Model */}
             <div className="w-1/2 h-screen">
               <Canvas camera={{ fov: 40 }}>
                 <ambientLight intensity={0.5} />
                 <directionalLight color={activeCan.modelGlowColor} position={[5, 5, 5]} intensity={2} />
                 <directionalLight color="#ffffff" position={[-5, 3, 2]} intensity={0.8} />
                 <spotLight position={[0, 10, -10]} intensity={1.5} angle={0.3} penumbra={1} distance={50} />
-                <Suspense fallback={null}> {/* Added Suspense here */}
+                <Suspense fallback={null}>
                   <Environment preset="city" />
                   <CameraController targetPosition={activeCan.camera} />
                   <AnimatePresence mode="wait">
@@ -384,7 +375,6 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* ========== [FIX 2] HERO SECTION (UPDATED) ========= */}
       <section
         id="about-section"
         className="relative w-full min-h-screen bg-black text-white flex flex-col items-center justify-center"
@@ -397,22 +387,12 @@ export default function Home() {
           muted
         />
         <div className="absolute inset-0 bg-black/50 z-0"></div>
-
-        {/* THIS IS THE FIX: 
-          The whileInView logic is moved to this parent motion.div.
-          This is a real DOM element, so IntersectionObserver will work.
-          The 'animate' state ("hidden" or "visible") will be passed down
-          to all children, including HeroModel and the text elements.
-        */}
-        <motion.div 
+        <motion.div
           className="relative w-full max-w-7xl flex flex-col md:flex-row items-center justify-center z-20 mt-10"
           initial="hidden"
           whileInView="visible"
           viewport={{ amount: 0.3 }}
         >
-          {/* This div no longer needs motion props,
-            but HeroModel inside will inherit from the parent.
-          */}
           <div className="w-full md:w-1/2 h-[70vh]">
             <Canvas camera={{ fov: 50, position: heroConfig.camera }}>
               <Suspense fallback={null}>
@@ -421,19 +401,12 @@ export default function Home() {
                 <directionalLight color="#ffffff" position={[-4, -2, 5]} intensity={1.5} />
                 <Environment preset="city" />
                 <Stars radius={100} depth={50} count={3000} fade speed={1} />
-                {/* HeroModel will inherit "animate" state from the parent motion.div */}
                 <HeroModel config={heroConfig} />
                 <OrbitControls enableZoom={false} enablePan={false} />
               </Suspense>
             </Canvas>
           </div>
-
-          {/* This div also inherits from the parent.
-            The child text elements will animate based on textVariants.
-          */}
-          <motion.div
-            className="w-full md:w-1/2 px-8"
-          >
+          <motion.div className="w-full md:w-1/2 px-8">
             <motion.h3
               className="text-cyan-400 uppercase mb-2 tracking-widest text-2xl font-display"
               custom={0}
@@ -441,53 +414,43 @@ export default function Home() {
             >
               {heroConfig.subtitle}
             </motion.h3>
-            <motion.h1 
-              className="text-8xl font-display mb-2" 
-              custom={1} 
+            <motion.h1
+              className="text-8xl font-display mb-2"
+              custom={1}
               variants={textVariants}
             >
               {heroConfig.title}
             </motion.h1>
-            <motion.h2 
-              className="text-3xl text-gray-300 mb-4 font-display" 
-              custom={2} 
+            <motion.h2
+              className="text-3xl text-gray-300 mb-4 font-display"
+              custom={2}
               variants={textVariants}
             >
               {heroConfig.flavor}
             </motion.h2>
-            <motion.p 
-              className="text-gray-300 leading-relaxed text-lg" 
-              custom={3} 
+            <motion.p
+              className="text-gray-300 leading-relaxed text-lg"
+              custom={3}
               variants={textVariants}
             >
               {heroConfig.description}
             </motion.p>
-         <motion.button
-  className="relative mt-8 px-8 py-3 rounded-full font-bold text-white text-lg overflow-hidden"
-  whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(255,255,255,0.6)" }}
-  whileTap={{ scale: 0.95 }}
-  onClick={() => navigate("/products")}
-  style={{
-    background: "radial-gradient(circle at 20% 20%, #6b5bff, #1e1e3f, #000)", // galaxy effect
-    border: "1px solid rgba(255,255,255,0.2)",
-  }}
->
-  {/* Animated star border */}
-  <span className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
-    <span className="absolute w-2 h-2 bg-white rounded-full top-1/4 left-1/3 animate-star"></span>
-    <span className="absolute w-1.5 h-1.5 bg-white rounded-full top-1/2 left-2/3 animate-star"></span>
-    <span className="absolute w-1.5 h-1.5 bg-white rounded-full top-3/4 left-1/4 animate-star"></span>
-  </span>
-
-  {/* Button text */}
-  Discover The Flavors
-</motion.button>
-
+            <motion.button
+              className="relative mt-8 px-8 py-3 rounded-full font-bold text-white text-lg overflow-hidden"
+              whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(255,255,255,0.6)" }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate("/products")}
+              style={{
+                background: "radial-gradient(circle at 20% 20%, #6b5bff, #1e1e3f, #000)",
+                border: "1px solid rgba(255,255,255,0.2)",
+              }}
+            >
+              Discover The Flavors
+            </motion.button>
           </motion.div>
         </motion.div>
       </section>
 
-      {/* ==================== 3. NEW RELEASES SECTION ==================== */}
       <section className="relative w-full bg-[#111] py-20 px-6 flex flex-col items-center">
         <h2 className="text-4xl md:text-6xl font-black mb-6 font-display">New Releases</h2>
         <p className="text-lg text-gray-400 max-w-2xl text-center mb-16">
@@ -515,7 +478,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ==================== LAZY LOADED COMPONENTS ==================== */}
       <Suspense fallback={<div className="w-full h-screen bg-black flex items-center justify-center text-white">Loading...</div>}>
         <FlavourCarousel />
         <LabubuBanner />
