@@ -8,6 +8,7 @@ import * as THREE from "three";
 import CanModel from "../Components/CanModel";
 import Layout from "../Components/Layout";
 import { ShoppingCart } from "lucide-react";
+import Navbar from "../Components/Navbar";
 
 // ==================== LAZY LOADING ====================
 const FlavourCarousel = lazy(() => import("../Components/FlavourCarousel"));
@@ -274,6 +275,7 @@ export default function Home() {
   return (
     <div className="bg-black text-white min-h-screen relative overflow-hidden font-body">
       
+      <Navbar/>
       <AnimatePresence>
         {showMainContent && <Layout />}
       </AnimatePresence>

@@ -1,86 +1,106 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Zap } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
-  const [visible, setVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
   const [hoveredLink, setHoveredLink] = useState(null);
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const navLinks = ["Home", "Products", "About", "Contact"];
-
-  // --- Scroll detection logic ---
-  useEffect(() => {
-    const controlNavbar = () => {
-      // If scrolling down, hide navbar
-      if (window.scrollY > lastScrollY && window.scrollY > 100) {
-        setVisible(false);
-      } else { // If scrolling up, show navbar
-        setVisible(true);
-      }
-      // Remember current scroll position for the next move
-      setLastScrollY(window.scrollY);
-    };
-
-    window.addEventListener("scroll", controlNavbar);
-    return () => {
-      window.removeEventListener("scroll", controlNavbar);
-    };
-  }, [lastScrollY]);
-
+  const navLinks = [
+    { name: "Home", path: "/" },
+    { name: "Products", path: "/products" },
+    { name: "About", path: "/about" },
+    { name: "Collaborate", path: "/collaborate" },
+    { name: "Contact", path: "/contact" },
+  ];
 
   return (
-    <motion.nav
-      // --- Animate visibility based on scroll direction ---
-      animate={{ y: visible ? 0 : -120 }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
-      
-      // --- CORRECTED CENTERING AND SIZING ---
-      className="fixed top-6 left-[19%] -translate-x-1/2 z-50
-                 w-[90%] max-w-screen-lg  // Responsive width: 90% of screen, capped at 1024px
-                 backdrop-blur-xl bg-white/5 border border-white/10
-                 shadow-lg shadow-black/20 rounded-full flex justify-between
-                 items-center px-8 py-3"
-    >
-        {/* === Logo === */}
-        <motion.div
-          className="flex items-center space-x-2 cursor-pointer"
-          whileHover={{ scale: 1.05 }}
-          transition={{ type: "spring", stiffness: 300 }}
-        >
-          <Zap className="text-white w-7 h-7 drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
-          <h1 className="text-white text-xl font-bold tracking-wide">
-            EnergyX
-          </h1>
-        </motion.div>
+    <>
+      {/* LEFT: Logo */}
+      <motion.div
+        className="fixed left-8 top-6 z-[100] flex items-center cursor-pointer group"
+        onClick={() => navigate("/")}
+        initial={{ opacity: 0, x: -40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <motion.img
+          src="/logo192.png"
+          alt="Logo"
+          className="w-10 h-10 rounded-full border border-white/30 object-cover
+                     shadow-[0_0_15px_rgba(0,255,255,0.4)] group-hover:shadow-[0_0_25px_rgba(0,255,255,0.8)]
+                     transition-all duration-300"
+          whileHover={{ scale: 1.1 }}
+        />
+        <span className="ml-2 text-white font-semibold text-lg
+                         drop-shadow-[0_0_10px_rgba(0,255,255,0.6)] group-hover:text-cyan-400 transition-all">
+          EnergyX
+        </span>
+      </motion.div>
 
-        {/* === Nav Links with Glider Effect === */}
+      {/* CENTER: Nav Links */}
+      <motion.nav
+        className="fixed top-6 left-1/2 -translate-x-1/2
+                   z-[90] px-6 py-3 backdrop-blur-xl bg-white/5 border border-white/10
+                   shadow-lg shadow-black/20 rounded-full flex items-center justify-center"
+      >
         <ul
-          className="flex items-center space-x-2 relative"
+          className="flex items-center space-x-6 relative"
           onMouseLeave={() => setHoveredLink(null)}
         >
           {navLinks.map((link) => (
             <li
-              key={link}
+              key={link.name}
               className="relative px-4 py-2 rounded-full cursor-pointer"
-              onMouseEnter={() => setHoveredLink(link)}
+              onMouseEnter={() => setHoveredLink(link.name)}
+              onClick={() => navigate(link.path)}
             >
-              {hoveredLink === link && (
+              {(hoveredLink === link.name || location.pathname === link.path) && (
                 <motion.span
                   layoutId="glider"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
                   className="absolute inset-0 bg-white/10 rounded-full"
                 />
               )}
-              <span className="relative z-10 text-white text-sm font-medium">
-                {link}
+              <span
+                className={`relative z-10 text-sm font-medium ${
+                  location.pathname === link.path ? "text-cyan-400" : "text-white"
+                }`}
+              >
+                {link.name}
               </span>
             </li>
           ))}
         </ul>
-    </motion.nav>
+      </motion.nav>
+
+      {/* RIGHT: Buttons */}
+      <motion.div
+        className="fixed right-8 top-6 z-[100] flex items-center gap-4"
+        initial={{ opacity: 0, x: 40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <motion.button
+          onClick={() => navigate("/signin")}
+          className="px-4 py-2 text-sm font-semibold rounded-full border border-white/20
+                     text-white hover:text-cyan-400 hover:border-cyan-400 transition-all duration-300
+                     shadow-[0_0_10px_rgba(0,255,255,0.4)] hover:shadow-[0_0_20px_rgba(0,255,255,0.8)]"
+          whileHover={{ scale: 1.05 }}
+        >
+          Sign In
+        </motion.button>
+
+        <motion.button
+          className="p-2 rounded-full border border-white/20 text-white hover:text-cyan-400 hover:border-cyan-400
+                     shadow-[0_0_10px_rgba(0,255,255,0.4)] hover:shadow-[0_0_20px_rgba(0,255,255,0.8)] transition-all"
+          whileHover={{ scale: 1.1 }}
+        >
+          <ShoppingCart size={20} />
+        </motion.button>
+      </motion.div>
+    </>
   );
 };
 
