@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { ShoppingCart } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import StarBorder from "./StarBorder";
 
 const Navbar = () => {
   const [hoveredLink, setHoveredLink] = useState(null);
@@ -82,6 +83,7 @@ const Navbar = () => {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
       >
+        
         <motion.button
           onClick={() => navigate("/signin")}
           className="px-4 py-2 text-sm font-semibold rounded-full border border-white/20

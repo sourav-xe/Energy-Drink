@@ -7,6 +7,7 @@ import SplashScreen from "./Pages/SplashScreen"; // 👈 import your splash
 const About = React.lazy(() => import("./Pages/About"));
 const Products = React.lazy(() => import("./Pages/Products"));
 const Collaborate = React.lazy(() => import("./Pages/Collaborate"));
+const Contact = React.lazy(() => import("./Pages/Contact"));
 
 // 🔹 Preload function for images & GLTFs
 const preloadAssets = async () => {
@@ -58,6 +59,7 @@ const App = () => {
         <Route path="/about" element={<About />} />
         <Route path="/products" element={<Products />} />
         <Route path="/collaborate" element={<Collaborate />} />
+        <Route path="/contact" element={<Contact />} />
       </Routes>
     </Suspense>
   );
