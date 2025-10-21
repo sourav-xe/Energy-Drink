@@ -1,69 +1,49 @@
-/* src/Components/ScrollStack.css */
-
-/* The outer scroll container */
 .scroll-stack-scroller {
   position: relative;
   width: 100%;
-  height: 200vh; /* enough to allow smooth scrolling */
-  overflow: auto;
-  background: transparent;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: visible;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: scroll-position;
 }
 
-/* The inner wrapper for the cards */
 .scroll-stack-inner {
+  padding: 20vh 5rem 50rem;
+  min-height: 100vh;
+}
+
+.scroll-stack-card-wrapper {
   position: relative;
-  width: 100%;
-  min-height: 200vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
 }
 
-/* The cards themselves */
 .scroll-stack-card {
-  position: absolute;
-  top: 0;
-  width: 420px;
-  max-width: 90vw;
-  padding: 2rem;
-  border-radius: 1.25rem;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  color: white;
-  text-align: center;
-  transition: transform 0.4s ease, filter 0.4s ease, box-shadow 0.4s ease;
+  transform-origin: top center;
   will-change: transform, filter;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+  height: 20rem;
+  width: 100%;
+  margin: 30px 0;
+  padding: 3rem;
+  border-radius: 40px;
+  box-sizing: border-box;
+  /* Improve mobile performance */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  position: relative;
 }
 
-/* Overlap effect — cards are slightly offset */
-.scroll-stack-card:nth-child(1) {
-  transform: translateY(0px) scale(1);
-  z-index: 4;
-}
-.scroll-stack-card:nth-child(2) {
-  transform: translateY(60px) scale(0.96);
-  z-index: 3;
-}
-.scroll-stack-card:nth-child(3) {
-  transform: translateY(120px) scale(0.92);
-  z-index: 2;
-}
-.scroll-stack-card:nth-child(4) {
-  transform: translateY(180px) scale(0.88);
-  z-index: 1;
-}
-
-/* Hover brings card to front */
-.scroll-stack-card:hover {
-  z-index: 999;
-  transform: translateY(-20px) scale(1.05);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
-}
-
-/* End spacer */
 .scroll-stack-end {
-  height: 120vh;
+  width: 100%;
+  height: 1px;
+}
+.scroll-stack-end {
+  height: 0 !important;
+  margin: 0 !important;
 }
