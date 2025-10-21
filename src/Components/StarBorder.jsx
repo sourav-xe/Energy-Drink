@@ -1,5 +1,19 @@
 import './StarBorder.css';
 
+
+
+
+// import StarBorder from './StarBorder'
+  
+// <StarBorder
+//   as="button"
+//   className="custom-class"
+//   color="cyan"
+//   speed="5s"
+// >
+//   // content
+// </StarBorder>
+
 const StarBorder = ({
   as: Component = 'button',
   className = '',
