@@ -435,9 +435,6 @@ class ArcballControl {
   pointerRotation = quat.create();
   rotationVelocity = 0;
   rotationAxis = vec3.fromValues(1, 0, 0);
-  autoRotationSpeed = 0.0001; // adjust speed
-autoRotationEnabled = true; // control if auto-rotation is active
-
   snapDirection = vec3.fromValues(0, 0, -1);
   snapTargetDirection;
   EPSILON = 0.1;
@@ -514,13 +511,6 @@ autoRotationEnabled = true; // control if auto-rotation is active
         this.quatFromVectors(a, b, snapRotation, angleFactor);
       }
     }
-// Auto-rotation when user is not dragging
-if (!this.isPointerDown && this.autoRotationEnabled) {
-  const autoQuat = quat.create();
-  // Rotate around Y axis slowly
-  quat.setAxisAngle(autoQuat, [0, 1, 0], this.autoRotationSpeed * deltaTime);
-  quat.multiply(this.orientation, autoQuat, this.orientation);
-}
 
     const combinedQuat = quat.multiply(quat.create(), snapRotation, this.pointerRotation);
     this.orientation = quat.multiply(quat.create(), combinedQuat, this.orientation);
@@ -698,30 +688,6 @@ class InfiniteGridMenu {
     this.resize();
 
     if (onInit) onInit(this);
-    // 🔄 Auto-change active card every 2 seconds
-// 🔄 Auto-change active card every 2 seconds + smooth zoom-out when idle
-let currentIndex = 0;
-setInterval(() => {
-  if (!this.control.isPointerDown) {
-    currentIndex = (currentIndex + 1) % this.instancePositions.length;
-
-    // Snap to next vertex direction
-    const snapDirection = vec3.normalize(
-      vec3.create(),
-      this.#getVertexWorldPosition(currentIndex)
-    );
-    this.control.snapTargetDirection = snapDirection;
-
-    // Zoom out slightly before switching
-    this.camera.position[2] = 6.5;
-
-    // trigger item update
-    const itemIndex = currentIndex % Math.max(1, this.items.length);
-    this.onActiveItemChange(itemIndex);
-  }
-}, 5000);
-
-
   }
 
   #initTexture() {
@@ -886,8 +852,7 @@ setInterval(() => {
   #onControlUpdate(deltaTime) {
     const timeScale = deltaTime / this.TARGET_FRAME_DURATION + 0.0001;
     let damping = 5 / timeScale;
-  let cameraTargetZ = this.control.isPointerDown ? 3.5 : 6.5;
-
+    let cameraTargetZ = 3;
 
     const isMoving = this.control.isPointerDown || Math.abs(this.smoothRotationVelocity) > 0.01;
 

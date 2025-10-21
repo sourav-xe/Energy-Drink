@@ -6,38 +6,39 @@ import Navbar from "../Components/Navbar";
 
 const items = [
   {
-    image: 'https://picsum.photos/300/300?',
-    link: 'https://google.com/',
-    title: 'Item 1',
-    description: 'This is pretty cool, right?'
+    image: '/collabs/f11.gif',
+    link: 'https://www.monsterenergy.com/',
+    title: 'Monster Energy Team',
+    description: 'High-energy crew known for their bold stunts and motorsport dominance.'
   },
   {
-    image: 'https://picsum.photos/400/400?',
-    link: 'https://google.com/',
-    title: 'Item 2',
-    description: 'This is pretty cool, right?'
+    image: '/collabs/image.png',
+    link: 'https://www.redbull.com/',
+    title: 'Esports',
+    description: 'Driven into Esports by MonsterEnergy Drink'
   },
   {
-    image: 'https://picsum.photos/500/500?',
-    link: 'https://google.com/',
-    title: 'Item 3',
-    description: 'This is pretty cool, right?'
+    image: '/collabs/mons12.jpg',
+    link: 'https://www.monsterenergy.com/',
+    title: 'Athletes',
+    description: 'Athletes redefining action sports across the globe.'
   },
   {
-    image: 'https://picsum.photos/600/600?',
-    link: 'https://google.com/',
-    title: 'Item 4',
-    description: 'This is pretty cool, right?'
+    image: '/collabs/monsst1.webp',
+    link: 'https://www.redbull.com/int-en/projects',
+    title: 'Labubu',
+    description: 'Creative collaborations pushing boundaries in sports, music, and culture.'
+  },
+  {
+    image: '/collabs/ninja1.jpg',
+    link: 'https://www.twitch.tv/ninja',
+    title: 'Ninja',
+    description: 'Ninja world-renowned gamer and streamer representing Red Bull.'
   }
 ];
 
 const Collaborate = () => {
-  const scrollToContent = () => {
-    const section = document.getElementById("collab-section");
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+
 
   return (
     <div className="bg-black text-white min-h-screen">
@@ -108,6 +109,8 @@ Explore More
 
       {/* --- Next Section --- */}
 
+
+;
 
 <div style={{ height: '600px', position: 'relative' }}>
   <InfiniteMenu items={items}/>
