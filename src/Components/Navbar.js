@@ -27,17 +27,20 @@ const Navbar = () => {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <motion.img
-          src="/logo192.png"
-          alt="Logo"
-          className="w-10 h-10 rounded-full border border-white/30 object-cover
-                     shadow-[0_0_15px_rgba(0,255,255,0.4)] group-hover:shadow-[0_0_25px_rgba(0,255,255,0.8)]
-                     transition-all duration-300"
-          whileHover={{ scale: 1.1 }}
-        />
+<motion.img
+  src="/mLogo.png"
+  alt="Logo"
+  className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover
+             shadow-[0_0_15px_rgba(0,255,255,0.5)] hover:shadow-[0_0_25px_rgba(0,255,255,0.9)]
+             transition-all duration-300 ease-in-out bg-transparent"
+  whileHover={{ scale: 1.08 }}
+  whileTap={{ scale: 0.96 }}
+/>
+
+
         <span className="ml-2 text-white font-semibold text-lg
                          drop-shadow-[0_0_10px_rgba(0,255,255,0.6)] group-hover:text-cyan-400 transition-all">
-          EnergyX
+          Daura
         </span>
       </motion.div>
 
