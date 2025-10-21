@@ -9,6 +9,20 @@ import CanModel from "../Components/CanModel";
 import Layout from "../Components/Layout";
 import { ShoppingCart } from "lucide-react";
 import Navbar from "../Components/Navbar";
+// ==================== TEXT ANIMATION VARIANTS ====================
+const textVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.2,
+      duration: 0.8,
+      ease: "easeOut",
+    },
+  }),
+};
+
 
 // ==================== LAZY LOADING ====================
 const FlavourCarousel = lazy(() => import("../Components/FlavourCarousel"));
@@ -229,20 +243,49 @@ const ProductScene = React.memo(({ config }) => (
 
 // ==================== MAIN PAGE COMPONENT ====================
 export default function Home() {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [progress, setProgress] = useState(0); // optional progress indicator
   const [activeIndex, setActiveIndex] = useState(0);
   const [showMainContent, setShowMainContent] = useState(true);
   const navigate = useNavigate();
 
+  // ==================== MODEL PRELOADING BEFORE SPLASH DISAPPEARS ====================
   useEffect(() => {
-    cans.forEach(can => useGLTF.preload(can.modelPath));
-    heroConfig.modelPath && useGLTF.preload(heroConfig.modelPath);
-    newReleases.forEach(release => useGLTF.preload(release.modelPath));
+    const allModels = [
+      ...cans.map((can) => can.modelPath),
+      heroConfig.modelPath,
+      ...newReleases.map((r) => r.modelPath),
+    ];
+
+    let loaded = 0;
+    const total = allModels.length;
+
+    Promise.all(
+      allModels.map((path) =>
+        new Promise((resolve) => {
+          useGLTF.preload(path);
+          // Fake mini progress simulation
+          const timer = setInterval(() => {
+            loaded += 1;
+            setProgress(Math.floor((loaded / total) * 100));
+            clearInterval(timer);
+            resolve();
+          }, 250);
+        })
+      )
+    ).then(() => {
+      // give small buffer for smoothness
+      setTimeout(() => setIsLoaded(true), 600);
+    });
   }, []);
 
+  // ==================== SCROLL HANDLER ====================
   useEffect(() => {
     const handleScroll = () => {
       const scrollYvh = (window.scrollY / window.innerHeight) * 100;
-      const cumulativeHeights = cans.map((can, i) => cans.slice(0, i + 1).reduce((sum, c) => sum + (c.scrollHeight || 100), 0));
+      const cumulativeHeights = cans.map((can, i) =>
+        cans.slice(0, i + 1).reduce((sum, c) => sum + (c.scrollHeight || 100), 0)
+      );
       let newIndex = 0;
       for (let i = 0; i < cumulativeHeights.length; i++) {
         if (scrollYvh < cumulativeHeights[i]) {
@@ -251,26 +294,57 @@ export default function Home() {
         }
       }
       if (newIndex !== activeIndex) setActiveIndex(newIndex);
+
       const aboutSection = document.querySelector("#about-section");
       if (aboutSection) {
         const rect = aboutSection.getBoundingClientRect();
         setShowMainContent(rect.top > window.innerHeight * 0.5);
       }
     };
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [activeIndex]);
 
   const activeCan = cans[activeIndex];
 
-  const textVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: (i = 1) => ({
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.8, ease: "easeOut", delay: i * 0.2 },
-    }),
-  };
+  // ==================== SPLASH SCREEN ====================
+  if (!isLoaded) {
+    return (
+      <motion.div
+        className="fixed inset-0 bg-black flex flex-col items-center justify-center text-white font-display z-[9999]"
+        initial={{ opacity: 1 }}
+        animate={{ opacity: isLoaded ? 0 : 1 }}
+        transition={{ duration: 1 }}
+      >
+        <motion.img
+          src="/logo.png" // change this to your brand logo
+          alt="Loading..."
+          className="w-32 h-32 mb-6 animate-pulse"
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 1.5, repeat: Infinity, repeatType: "mirror" }}
+        />
+        <motion.div
+          className="w-64 h-2 bg-gray-700 rounded-full overflow-hidden"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <motion.div
+            className="h-full bg-lime-400"
+            initial={{ width: "0%" }}
+            animate={{ width: `${progress}%` }}
+            transition={{ duration: 0.2 }}
+          />
+        </motion.div>
+        <p className="mt-4 text-gray-400 tracking-wider text-sm">
+          Loading Energy Assets... {progress}%
+        </p>
+      </motion.div>
+    );
+  }
+
+  // ==================== MAIN PAGE (everything below stays same) ====================
 
   return (
     <div className="bg-black text-white min-h-screen relative overflow-hidden font-body">

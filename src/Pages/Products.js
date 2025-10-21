@@ -174,31 +174,92 @@ const Sidebar = ({ filters, onFilterChange }) => {
     );
 };
 
-const DiscountSection = () => (
-    <div className="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0 md:space-x-8 p-6 bg-neutral-900 border border-neutral-800 rounded-2xl shadow-xl shadow-lime-500/5">
+const DiscountSection = () => {
+  const [email, setEmail] = useState("");
+  const [showNotification, setShowNotification] = useState(false);
+
+  const handleSubmit = () => {
+    if (!email.trim()) return alert("Please enter your email!");
+    setShowNotification(true);
+    setEmail("");
+  };
+
+  return (
+    <>
+      <div className="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0 md:space-x-8 p-6 bg-neutral-900 border border-neutral-800 rounded-2xl shadow-xl shadow-lime-500/5 relative overflow-hidden">
         <div>
-            <h2 className="text-4xl lg:text-5xl font-extrabold text-white mb-2">Pure Energy, Big Discount</h2>
-            <p className="text-neutral-400 text-lg">Save up to 50% off on your first order</p>
-            <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                <input type="email" placeholder="Your email address" className="bg-neutral-800 text-white placeholder-neutral-500 px-4 py-3 rounded-lg w-full sm:w-auto flex-grow focus:outline-none focus:ring-2 focus:ring-lime-400 border border-neutral-700" />
-                <button className="bg-lime-400 hover:bg-lime-500 text-neutral-900 font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 whitespace-nowrap">Get Coupon</button>
-            </div>
+          <h2 className="text-4xl lg:text-5xl font-extrabold text-white mb-2">
+            Pure Energy, Big Discount
+          </h2>
+          <p className="text-neutral-400 text-lg">
+            Save up to 50% off on your first order
+          </p>
+          <div className="mt-6 flex flex-col sm:flex-row gap-3">
+            <input
+              type="email"
+              placeholder="Your email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="bg-neutral-800 text-white placeholder-neutral-500 px-4 py-3 rounded-lg w-full sm:w-auto flex-grow focus:outline-none focus:ring-2 focus:ring-lime-400 border border-neutral-700"
+            />
+            <button
+              onClick={handleSubmit}
+              className="bg-lime-400 hover:bg-lime-500 text-neutral-900 font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 whitespace-nowrap"
+            >
+              Get Coupon
+            </button>
+          </div>
         </div>
         <div className="w-48 h-48 md:w-56 md:h-56 flex-shrink-0 overflow-hidden">
-             <motion.video
-                    src="/avatars/mon.webm"
-                    className="w-[264px] h-52 rounded-xl object-cover border border-white/20 shadow-lg shadow-green-500/20"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.8, duration: 0.5 }}
-                  />
+          <motion.video
+            src="/avatars/mon.webm"
+            className="w-[264px] h-52 rounded-xl object-cover border border-white/20 shadow-lg shadow-green-500/20"
+            autoPlay
+            loop
+            muted
+            playsInline
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.8, duration: 0.5 }}
+          />
         </div>
-    </div>
-);
+      </div>
+
+      {/* Notification Modal */}
+      <AnimatePresence>
+        {showNotification && (
+          <motion.div
+            className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0, y: 50 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: 50 }}
+              transition={{ type: "spring", stiffness: 100, damping: 15 }}
+              className="bg-neutral-900 border border-lime-400/30 rounded-2xl p-8 text-center max-w-sm mx-auto shadow-xl shadow-lime-400/10"
+            >
+              <h3 className="text-2xl font-bold text-white mb-2">
+                🎉 Congratulations!
+              </h3>
+              <p className="text-neutral-300 mb-6">
+                We’ve sent a <span className="text-lime-400 font-semibold">30% OFF</span> coupon to your email for your first purchase.
+              </p>
+              <button
+                onClick={() => setShowNotification(false)}
+                className="bg-lime-400 hover:bg-lime-500 text-neutral-900 font-bold py-2 px-6 rounded-lg transition-transform transform hover:scale-105"
+              >
+                Okay
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+};
 
 const ProductCard = ({ product, onProductSelect }) => (
     <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 group relative overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 ease-in-out shadow-lg hover:shadow-lime-400/10 hover:border-lime-400/50">

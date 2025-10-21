@@ -1,6 +1,7 @@
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import Home from "./Pages/Home";
+import SplashScreen from "./Pages/SplashScreen"; // 👈 import your splash
 
 // Lazy load heavy pages
 const About = React.lazy(() => import("./Pages/About"));
@@ -9,7 +10,6 @@ const Collaborate = React.lazy(() => import("./Pages/Collaborate"));
 
 // 🔹 Preload function for images & GLTFs
 const preloadAssets = async () => {
-  // Image URLs you use in different pages
   const images = [
     "/collabs/f11.gif",
     "/collabs/f22.gif",
@@ -18,11 +18,7 @@ const preloadAssets = async () => {
     "https://picsum.photos/600/600?grayscale",
   ];
 
-  // GLTF model URLs used in Products/Collaborate/etc.
-  const models = [
-    "/models/drink1.gltf",
-    "/models/drink2.gltf",
-  ];
+  const models = ["/models/drink1.gltf", "/models/drink2.gltf"];
 
   // Preload images
   images.forEach((src) => {
@@ -30,7 +26,7 @@ const preloadAssets = async () => {
     img.src = src;
   });
 
-  // Preload GLTF models (lazy load only when needed)
+  // Preload GLTFs
   if (models.length > 0) {
     const { GLTFLoader } = await import("three/examples/jsm/loaders/GLTFLoader.js");
     const loader = new GLTFLoader();
@@ -39,21 +35,29 @@ const preloadAssets = async () => {
 };
 
 const App = () => {
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    // 👇 Preload in background after Home mounts
-    const timeout = setTimeout(() => {
-      preloadAssets();
-    }, 2000); // start preloading after 2 seconds of Home load
-    return () => clearTimeout(timeout);
+    // Start preloading while splash is visible
+    preloadAssets();
+
+    // Simulate splash duration (you can tweak this)
+    const timer = setTimeout(() => setLoading(false), 3000);
+
+    return () => clearTimeout(timer);
   }, []);
+
+  if (loading) {
+    return <SplashScreen />; // 👈 Show splash first
+  }
 
   return (
     <Suspense fallback={<div className="text-white p-10 text-center">Loading...</div>}>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
-        <Route path="/Products" element={<Products />} />
-        <Route path="/Collaborate" element={<Collaborate />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/collaborate" element={<Collaborate />} />
       </Routes>
     </Suspense>
   );
