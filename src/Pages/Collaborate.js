@@ -110,33 +110,7 @@ const Collaborate = () => {
 
      {/* ===================== FLYING POSTERS SECTION ===================== */}
 <section className="relative h-[1700px] overflow-hidden">
-  {/* Liquid background — transparent overlay */}
-  <div className="absolute inset-0 z-10">
-   <LiquidEther
-   colors={[
-    "#DA291C",  // Red Bull red
-    
-  ]}
-  mouseForce={20}
-  cursorSize={130}
-  isViscous={false}
-  viscous={25}
-  iterationsViscous={30}
-  iterationsPoisson={28}
-  resolution={0.5}
-  isBounce={false}
-  autoDemo={true}
-  autoSpeed={0.5}
-  autoIntensity={2.0}
-  takeoverDuration={0.3}
-  autoResumeDelay={2500}
-  autoRampDuration={0.6}
-  transparent={true}
-  multiColor={true}      // 👈 custom prop you’ll add
-  colorBlendMode="add"   // 👈 optional: additive blending for luminous trails
-/>
-
-  </div>
+  
 
   {/* Posters below — still visible */}
   <div className="absolute inset-0 z-0">

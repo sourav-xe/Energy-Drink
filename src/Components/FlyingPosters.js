@@ -387,7 +387,7 @@ class Canvas {
  update() {
   // --- AUTO-SCROLL LOOP ---
   // Speed of automatic scroll (tweak as desired)
-  const autoScrollSpeed = 0.08; 
+  const autoScrollSpeed = 0.02; 
 
   // Continuously move target downward (looping)
   this.scroll.target += autoScrollSpeed;

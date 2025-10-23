@@ -318,7 +318,7 @@ export default function Home() {
         transition={{ duration: 1 }}
       >
         <motion.img
-          src="/logo.png" // change this to your brand logo
+          src="/monsLogo.png" // change this to your brand logo
           alt="Loading..."
           className="w-32 h-32 mb-6 animate-pulse"
           initial={{ scale: 0.8, opacity: 0 }}
