@@ -64,6 +64,21 @@ export default function About() {
       { icon: <Milestone/>, title: "Lifestyle Branding", description: "They pioneered the concept of selling a lifestyle, not just a product. Consumers buy into the high-energy, high-performance identity." },
     ];
 
+    const logos = [
+        "/crouselLogo/1.jpg", "/crouselLogo/2.jpg", "/crouselLogo/3.jpg",
+        "/crouselLogo/4.jpg", "/crouselLogo/5.jpg", "/crouselLogo/6.jpg",
+        "/crouselLogo/7.jpg", "/crouselLogo/9.png", "/crouselLogo/monsLogo.png"
+    ];
+
+    const StatRow = ({ metric, rbValue, mValue, isAnimated = false }) => (
+        <div className="flex justify-between items-center py-4 border-b border-neutral-800">
+            <div className="w-2/5 text-center text-lg font-semibold">{rbValue}</div>
+            <div className="w-1/5 text-center text-sm text-neutral-400 uppercase">{metric}</div>
+            <div className="w-2/5 text-center text-lg font-semibold">{mValue}</div>
+        </div>
+    );
+
+
     return (
         <div className="bg-black text-neutral-200 min-h-screen font-sans overflow-x-hidden">
             <div className="absolute inset-0 z-0 opacity-40">
@@ -127,7 +142,6 @@ export default function About() {
                         </motion.div>
                     </motion.div>
                     
-                    {/* === NEW CARD GRID TIMELINE SECTION === */}
                     <motion.section 
                       initial={{ opacity: 0 }} 
                       whileInView={{ opacity: 1 }} 
@@ -140,9 +154,9 @@ export default function About() {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {timelineEvents.map((item, index) => {
                                 const brandClass = 
-                                  item.brand === 'Red Bull' ? 'border-t-blue-500' :
-                                  item.brand === 'Monster' ? 'border-t-lime-500' : 
-                                  'border-t-purple-500';
+                                  item.brand === 'Red Bull' ? 'border-t-blue-500 hover:shadow-blue-500/30' :
+                                  item.brand === 'Monster' ? 'border-t-lime-500 hover:shadow-lime-500/30' : 
+                                  'border-t-purple-500 hover:shadow-purple-500/30';
 
                                 return (
                                     <motion.div
@@ -151,7 +165,7 @@ export default function About() {
                                         whileInView={{ opacity: 1, y: 0 }}
                                         viewport={{ once: true, amount: 0.5 }}
                                         transition={{ duration: 0.5, delay: index * 0.1 }}
-                                        className={`bg-neutral-900/50 border border-neutral-800 border-t-4 ${brandClass} rounded-xl p-6 flex flex-col h-full hover:bg-neutral-800/50 transition-colors duration-300`}
+                                        className={`bg-neutral-900/50 border border-neutral-800 border-t-4 ${brandClass} rounded-xl p-6 flex flex-col h-full hover:bg-neutral-800/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-lg`}
                                     >
                                         <p className="text-3xl font-bold text-white mb-2">{item.year}</p>
                                         <h3 className={`font-semibold text-lg mb-4 ${ item.brand === 'Red Bull' ? 'text-blue-400' : 'text-lime-400'}`}>{item.brand}</h3>
@@ -162,14 +176,19 @@ export default function About() {
                         </div>
                     </motion.section>
 
-
-                    {/* Cultural Impact Section remains the same */}
                     <motion.section initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 1 }} className="py-20">
                         <h2 className="text-center text-4xl md:text-5xl font-bold text-white mb-4">More Than a Drink</h2>
                         <p className="text-center text-lg text-neutral-400 mb-12 max-w-2xl mx-auto">These brands didn't just sell beverages; they shaped entire cultures.</p>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                             {culturalImpacts.map((item, index) => (
-                                <motion.div key={index} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.5, delay: index * 0.1 }} className="bg-neutral-900/50 border border-neutral-800 p-6 rounded-2xl text-center backdrop-blur-sm">
+                                <motion.div 
+                                    key={index} 
+                                    initial={{ opacity: 0, scale: 0.9 }} 
+                                    whileInView={{ opacity: 1, scale: 1 }} 
+                                    viewport={{ once: true, amount: 0.5 }} 
+                                    transition={{ duration: 0.5, delay: index * 0.1 }} 
+                                    className="bg-neutral-900/50 border border-neutral-800 p-6 rounded-2xl text-center backdrop-blur-sm hover:-translate-y-2 hover:shadow-lg hover:shadow-lime-500/30 transition-all duration-300"
+                                >
                                     <div className="inline-block p-4 bg-neutral-800 rounded-full mb-4 text-lime-400">{item.icon}</div>
                                     <h3 className="text-xl font-bold text-white mb-2">{item.title}</h3>
                                     <p className="text-neutral-400 text-sm">{item.description}</p>
@@ -178,37 +197,35 @@ export default function About() {
                         </div>
                     </motion.section>
 
-                    {/* Product Showcase Section remains the same */}
                     <section className="py-20">
-                      <h2 className="text-center text-4xl md:text-5xl font-bold text-white mb-12">An Arsenal of Flavors</h2>
-                      <div className="relative flex flex-col gap-8 overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
+                      <h2 className="text-center text-4xl md:text-5xl font-bold text-white mb-12">Our Favorite Energy Drinks</h2>
+                      <div className="relative w-full overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
                         <div className="flex w-max animate-marquee">
-                          {[...Array(6)].map((_, i) => <img key={i} src={`/cans/rb${(i%3)+1}.png`} alt="" className="w-40 mx-4"/>)}
-                        </div>
-                        <div className="flex w-max animate-marquee-reverse">
-                          {[...Array(6)].map((_, i) => <img key={i} src={`/cans/m${(i%3)+1}.png`} alt="" className="w-40 mx-4"/>)}
+                          {[...logos, ...logos].map((logo, index) => (
+                            <div key={index} className="flex-shrink-0 w-64 mx-4 flex items-center justify-center">
+                                <img src={logo} alt={`Energy Drink Logo ${index + 1}`} className="max-h-24 object-contain"/>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </section>
                     
-                    {/* Face-Off Section remains the same */}
+                    {/* === UPDATED "VS" FACE-OFF SECTION === */}
                     <motion.section initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 1 }} className="py-20">
-                        <h2 className="text-center text-4xl md:text-5xl font-bold text-white mb-12">Face-Off: By The Numbers</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto bg-neutral-900/50 border border-neutral-800 rounded-2xl p-8 backdrop-blur-sm">
-                            <div className="text-center">
-                                <h3 className="text-2xl font-bold text-blue-400 mb-4">Red Bull</h3>
-                                <AnimatedStatCounter to={151} suffix="mg"/>
-                                <p className="text-sm text-neutral-400 tracking-wider uppercase">Caffeine per 16 fl oz</p>
+                        <h2 className="text-center text-4xl md:text-5xl font-bold text-white mb-12">Head-to-Head: The Final Showdown</h2>
+                        <div className="max-w-4xl mx-auto bg-neutral-900/50 border border-neutral-800 rounded-2xl p-8 backdrop-blur-sm">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-3xl font-bold text-blue-400">Red Bull</h3>
+                                <span className="text-4xl font-black text-neutral-600">VS</span>
+                                <h3 className="text-3xl font-bold text-lime-400">Monster</h3>
                             </div>
-                            <div className="text-center border-y-2 md:border-y-0 md:border-x-2 border-neutral-700 py-8 md:py-0">
-                                <h3 className="text-2xl font-bold text-white mb-4">Metric</h3>
-                                <AnimatedStatCounter to={34} prefix="~"/>
-                                <p className="text-sm text-neutral-400 tracking-wider uppercase">Global Varieties</p>
-                            </div>
-                            <div className="text-center">
-                                <h3 className="text-2xl font-bold text-lime-400 mb-4">Monster</h3>
-                                <AnimatedStatCounter to={160} suffix="mg"/>
-                                <p className="text-sm text-neutral-400 tracking-wider uppercase">Caffeine per 16 fl oz</p>
+                            
+                            <div className="flex flex-col gap-2">
+                                <StatRow metric="Founded" rbValue={<AnimatedStatCounter to={1987}/>} mValue={<AnimatedStatCounter to={2002}/>} />
+                                <StatRow metric="Std. Can Size" rbValue="8.4 fl oz" mValue="16 fl oz" />
+                                <StatRow metric="Caffeine / 16oz" rbValue={<>~<AnimatedStatCounter to={151}/>mg</>} mValue={<>~<AnimatedStatCounter to={160}/>mg</>} />
+                                <StatRow metric="Varieties" rbValue={<>~<AnimatedStatCounter to={30}/>+</>} mValue={<>~<AnimatedStatCounter to={34}/>+</>} />
+                                <StatRow metric="Slogan" rbValue={<span className="text-base italic">"Gives You Wings"</span>} mValue={<span className="text-base italic">"Unleash The Beast"</span>} />
                             </div>
                         </div>
                     </motion.section>

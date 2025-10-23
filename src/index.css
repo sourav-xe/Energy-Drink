@@ -14,4 +14,9 @@
   animation: star-move 1.5s linear infinite;
 }
 
+
+.w-max {
+  width: max-content;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;700;900&display=swap');
