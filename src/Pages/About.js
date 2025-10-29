@@ -486,6 +486,34 @@ export default function About() {
               </div>
             </motion.div>
           </motion.div>
+          
+         {/* === NEW SECTION WITH IMAGE TAG === */}
+<motion.section
+  initial={{ opacity: 0, y: 50 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  viewport={{ once: true, amount: 0.3 }}
+  transition={{ duration: 0.8, ease: "easeOut" }}
+  className="py-20"
+>
+  {/* This div is now the container for the image and overlay */}
+  <div
+    className="relative min-h-[400px] md:min-h-[500px] rounded-3xl border border-neutral-800 overflow-hidden"
+  >
+    {/* The image is now a proper <img> tag with motion properties */}
+    <motion.img
+      src="/bg/monsterbanner.jpg"
+      alt="Monster Energy banner with claw marks"
+      className="absolute inset-0 w-full h-full object-cover"
+      initial={{ scale: 1.1, opacity: 0 }}
+      whileInView={{ scale: 1, opacity: 1 }}
+      viewport={{ once: true, amount: 0.5 }}
+      transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+    />
+    
+    {/* The overlay still sits on top of the image */}
+    <div className="absolute inset-0 bg-black/50"></div>
+  </div>
+</motion.section> 
 
           <motion.section
             initial={{ opacity: 0 }}
