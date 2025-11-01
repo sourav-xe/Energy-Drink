@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { ShoppingCart } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
-import StarBorder from "./StarBorder";
+import { useCart } from "./CartContext";
 
 const Navbar = () => {
   const [hoveredLink, setHoveredLink] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
+  const { totalItems } = useCart();
 
   const navLinks = [
     { name: "Home", path: "/" },
@@ -27,17 +28,15 @@ const Navbar = () => {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
       >
-<motion.img
-  src="/mLogo.png"
-  alt="Logo"
-  className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover
-             shadow-[0_0_15px_rgba(0,255,255,0.5)] hover:shadow-[0_0_25px_rgba(0,255,255,0.9)]
-             transition-all duration-300 ease-in-out bg-transparent"
-  whileHover={{ scale: 1.08 }}
-  whileTap={{ scale: 0.96 }}
-/>
-
-
+        <motion.img
+          src="/mLogo.png"
+          alt="Logo"
+          className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover
+                     shadow-[0_0_15px_rgba(0,255,255,0.5)] hover:shadow-[0_0_25px_rgba(0,255,255,0.9)]
+                     transition-all duration-300 ease-in-out bg-transparent"
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.96 }}
+        />
         <span className="ml-2 text-white font-semibold text-lg
                          drop-shadow-[0_0_10px_rgba(0,255,255,0.6)] group-hover:text-cyan-400 transition-all">
           Daura
@@ -86,23 +85,32 @@ const Navbar = () => {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
       >
-        
         <motion.button
-          onClick={() => navigate("/signin")}
+          onClick={() => navigate("/signup")}
           className="px-4 py-2 text-sm font-semibold rounded-full border border-white/20
                      text-white hover:text-cyan-400 hover:border-cyan-400 transition-all duration-300
                      shadow-[0_0_10px_rgba(0,255,255,0.4)] hover:shadow-[0_0_20px_rgba(0,255,255,0.8)]"
           whileHover={{ scale: 1.05 }}
         >
-          Sign In
+          Sign Up
         </motion.button>
 
         <motion.button
-          className="p-2 rounded-full border border-white/20 text-white hover:text-cyan-400 hover:border-cyan-400
+          onClick={() => navigate("/cart")}
+          className="relative p-2 rounded-full border border-white/20 text-white hover:text-cyan-400 hover:border-cyan-400
                      shadow-[0_0_10px_rgba(0,255,255,0.4)] hover:shadow-[0_0_20px_rgba(0,255,255,0.8)] transition-all"
           whileHover={{ scale: 1.1 }}
+          aria-label="Cart"
         >
           <ShoppingCart size={20} />
+          {totalItems > 0 && (
+            <span
+              className="absolute -top-2 -right-2 h-5 min-w-5 px-1 rounded-full bg-cyan-400 text-black
+                         text-xs font-bold flex items-center justify-center"
+            >
+              {totalItems}
+            </span>
+          )}
         </motion.button>
       </motion.div>
     </>
